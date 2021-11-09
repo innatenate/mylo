@@ -187,7 +187,14 @@ def parseForecast(day, parse, forecastType='singular'):
                     "I've noticied a spike in wind speeds and cloud coverage as well as a decrease in barometric pressure. You should expect precipitation today or tomorrow.",
                     "The atmosphere is turbulent today, with wind speeds and cloud coverage being rather high and barometric pressure being rather low.",
                 ])
-    
+
+        if day['details']['maxtemp'] <= 32 or day['details']['mintemp'] <=12:
+            phrasing = uni.decision([
+                f"You'll more than likely want a jacket. The high is {day['details']['maxtemp']}° and the low is {day['details']['mintemp']}°."
+                f"I'm expecting some pretty cold temperatures, with the average temperature around {day['details']['fl']}°."
+            ])
+
+
         if len(beg) > 0 and len(notes) > 0:
             notes = uni.decision(["Additionally, ", "Furthermore, ", "Also, "]) + notes
         
