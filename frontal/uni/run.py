@@ -5,9 +5,10 @@ from stem import callosum
 from frontal.memory import activequeries
 
 import datetime
+from serpapi import GoogleSearch
 
 queries = []
-
+serpkey = ""
 class Query(object):
     def __init__(self, queryName, queryKeys, querySTContext=None, whitelist=None, require=None):
         self.name = queryName,
@@ -148,6 +149,60 @@ def howFunction(keywords, literal, profile):
     callosum.lastProcessed = {"phrase":phrase, "type":"query"}
     return True
 
+def searchFunction(keywords, literal, profile):
+    literal = literal.replace("search", "")
+    parms = {
+        "engine": "google",
+        "q": literal,
+        "api_key": serpkey,
+        "location": "Broken Arrow"
+    }
+    result = GoogleSearch(parms)
+    result = result.get_dict()
+    result = result['organic_results']
+    if "answer_box" in result:
+        rbt = result['answer_box']['type']
+        if "population_result" == rbt:
+            result = {'type': rbt, 'result': result['answer_box']['population']}
+        elif 'google_flights' == rbt:
+            results = []
+            for flight in result['answer_box']['flights']:
+                results.append(result['answer_box']['flights'][flight]['flight_info'])
+            result = {'type': rbt, 'result': results}
+        elif 'hotels' == rbt:
+            results = []
+            for hotel in result['answer_box']['hotels']:
+                results.append(result['answer_box']['hotels'][hotel])
+            result = {'type': rbt, 'result': results}
+        elif "dictionary_results" == rbt:
+            if len(result['answer_box']['definitions']) > 1:
+                results = []                
+                for term in result['answer_box']['definitions']:
+                    results.append(result['answer_box']['definitions'][term])
+                result = {'type':rbt, 'result':results}
+        elif "organic_result" == rbt and "list" in result['answer_box']:
+                results = []                
+                for item in result['answer_box']['list']:
+                    results.append(result['answer_box']['list'][item])
+                result = {'type':rbt, 'result':results}  
+        elif "organic_result" == rbt and "answer" in result['answer_box']:
+            if 'snippet' in result['answer_box']:
+                result = {'type':rbt, 'result':result['answer_box']['answer'], 'moreinfo': result['answer_box']['snippet']}
+            else:
+                result = {'type':rbt, 'result':result['answer_box']['answer']}
+        elif 'result' in result['answer_box']:
+            result = result['answer_box']['result']
+        else:
+            result = "none"
+    elif "knowledge_graph" in result:
+        if 'description' in result['knowledge_graph']: 
+            result = {'type':'knowledge_graph', 'result': result['knowledge_graph']['description']}
+        else:
+            result = "none"
+
+
+def addGroceryFunction(keywords, literal, profile):
+    ##https://serpapi.com/walmart-search-api
 
 time = Query(queryName="time", queryKeys=["what time is it", "what is the time", "what time", "what the time"], require=["time"])
 time.func = timeFunction

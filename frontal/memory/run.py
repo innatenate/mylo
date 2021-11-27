@@ -69,9 +69,9 @@ def timeFunction(keywords, literal, profile):
     now = datetime.datetime.now()
     phrase = functions.decision([f"The current time is {now.strftime('%I:%M %p')}.",
                              f"It's currently {now.strftime('%I:%M %p')}.",
-                             f"The time now is {now.strftime('%I:%M %p')}",
+                             f"The time now is {now.strftime('%I:%M %p')}.",
                              now.strftime('%I:%M %p'),
-                             f"It is currently {now.strftime('%I:%M %p')}"])
+                             f"It is currently {now.strftime('%I:%M %p')}."])
     callosum.lastProcessed = {"phrase":phrase, "type":"basic"}
     return True
 

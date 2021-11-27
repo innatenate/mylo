@@ -3,6 +3,7 @@ from temporal.longterm import nate
 from temporal.longterm import self
 from temporal.longterm import profiles
 from temporal.longterm import weather
+from temporal.longterm import lists
 
 from temporal import shortterm
 from temporal import grab
